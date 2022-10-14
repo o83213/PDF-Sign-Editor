@@ -1,0 +1,11 @@
+.container {
+  border: 2px solid black;
+  position: relative;
+  min-height: 300px;
+}
+.message {
+  text-align: center;
+}
+.error {
+  color: red;
+}

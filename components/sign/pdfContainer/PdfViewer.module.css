@@ -1,0 +1,11 @@
+.container {
+  position: relative;
+}
+.canvas {
+  border: 0.1rem solid red;
+}
+.fix-grid {
+  position: absolute;
+  left: 100px;
+  top: 100px;
+}
