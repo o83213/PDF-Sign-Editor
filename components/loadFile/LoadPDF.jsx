@@ -1,9 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import { useRouter } from "next/router";
 import classes from "./LoadPDF.module.css";
+import { pdfContext } from "../../context/pdfContext";
 const LoadPDF = () => {
   const router = useRouter();
   const inputRef = useRef();
+  const { pdfFile, setPdfFile } = useContext(pdfContext);
   const checkPDFFile = () => {
     const pdfFile = inputRef.current.files[0];
     if (pdfFile && pdfFile.type !== "application/pdf") {
@@ -18,25 +20,30 @@ const LoadPDF = () => {
       return;
     }
     // send the pdf file to the backend
-    const formData = new FormData();
-    formData.append("pdfFile", pdfFile);
-    fetch("http://localhost:8080/save-pdf", {
-      method: "POST",
-      body: formData,
-    })
-      .then((result) => {
-        return result.json();
-      })
-      .then((data) => {
-        const { fileName } = data;
-        router.push({
-          pathname: "/create-task/assign-field",
-          query: {
-            fileName,
-          },
-        });
-      })
-      .catch((err) => console.log(err));
+    // const formData = new FormData();
+    // formData.append("pdfFile", pdfFile);
+    // fetch("http://localhost:8080/save-pdf", {
+    //   method: "POST",
+    //   body: formData,
+    // })
+    //   .then((result) => {
+    //     return result.json();
+    //   })
+    //   .then((data) => {
+    //     const { fileName } = data;
+    //     router.push({
+    //       pathname: "/create-task/assign-field",
+    //       query: {
+    //         fileName,
+    //       },
+    //     });
+    //   })
+    //   .catch((err) => console.log(err));
+    // set pdf file to context
+    setPdfFile(pdfFile);
+    router.push({
+      pathname: "/create-task/assign-field",
+    });
   };
   return (
     <div className={classes["container-out"]}>

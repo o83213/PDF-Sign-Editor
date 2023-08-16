@@ -4,6 +4,8 @@ import Toolbar from "./toolbar/Toolbar";
 import classes from "./Container.module.css";
 import SigningPad from "./toolbar/signingpad/SigningPad";
 const Container = (props) => {
+  const { pdfFile, draggable } = props;
+  console.log("Container pdfFile", pdfFile);
   // both signature and text array to store data
   const [signatureArray, setSignatureArray] = useState([]);
   const [textArray, setTextArray] = useState([]);
@@ -16,7 +18,6 @@ const Container = (props) => {
   // store the selected block id for editing the block signature or text content
   const [selectedBlockId, setSelectedBlockId] = useState("");
   // set a blank canvas to global scope and pass to signature block as initial value
-  const [pdfUrl, setPdfUrl] = useState("");
   const blankRef = useRef(null);
   useEffect(() => {
     const blankContext = blankRef.current.getContext("2d");
@@ -24,34 +25,34 @@ const Container = (props) => {
     blankContext.fillText("Sign Here", 10, 50);
   }, []);
   // upload PDF file
-  useEffect(() => {
-    fetch("http://localhost:8080/data/rawPDF/" + props.PDFfileName).then(
-      (result) => {
-        if (props.signatureDatas) {
-          props.signatureDatas.forEach((signatureData) => {
-            createSignHandler(
-              { x: signatureData.x, y: signatureData.y },
-              signatureData._id
-            );
-          });
-        }
-        if (props.textDatas) {
-          props.textDatas.forEach((textData) => {
-            createTextHandler(
-              "text",
-              { x: textData.x, y: textData.y },
-              textData._id
-            );
-          });
-        }
-        setPdfUrl(result.url);
-      }
-    );
-    return () => {
-      setSignatureArray([]);
-      setTextArray([]);
-    };
-  }, [props.pdfFileName]);
+  // useEffect(() => {
+  //   fetch("http://localhost:8080/data/rawPDF/" + props.PDFfileName).then(
+  //     (result) => {
+  //       if (props.signatureDatas) {
+  //         props.signatureDatas.forEach((signatureData) => {
+  //           createSignHandler(
+  //             { x: signatureData.x, y: signatureData.y },
+  //             signatureData._id
+  //           );
+  //         });
+  //       }
+  //       if (props.textDatas) {
+  //         props.textDatas.forEach((textData) => {
+  //           createTextHandler(
+  //             "text",
+  //             { x: textData.x, y: textData.y },
+  //             textData._id
+  //           );
+  //         });
+  //       }
+  //       setPdfUrl(result.url);
+  //     }
+  //   );
+  //   return () => {
+  //     setSignatureArray([]);
+  //     setTextArray([]);
+  //   };
+  // }, [props.pdfFileName]);
   //
   const uploadPdfError = (inputError) => {
     setPdfError(inputError);
@@ -64,8 +65,10 @@ const Container = (props) => {
     setModalIsShow(false);
     setSelectedBlockId("");
   };
+
   // change editing mode
   const changeEditingModeHandler = (newMode) => {
+    console.log("newMode", newMode);
     setEditingMode(newMode);
   };
 
@@ -77,6 +80,7 @@ const Container = (props) => {
     updatedSignatureArray[signatureIndex].position = position;
     setSignatureArray(updatedSignatureArray);
   };
+
   // create a new signatrure block
   const createSignHandler = (position, id) => {
     const newSignature = {
@@ -95,6 +99,7 @@ const Container = (props) => {
     updatedSignatureArray[signatureIndex].dataUrl = canvasURL;
     setSignatureArray(updatedSignatureArray);
   };
+
   // text array handler
   const createTextHandler = (content, position, id) => {
     const newText = {
@@ -103,6 +108,22 @@ const Container = (props) => {
       position: position,
     };
     setTextArray((prev) => [...prev, newText]);
+  };
+
+  // delete signature block
+  const deleteSignHandler = (id) => {
+    const updatedSignatureArray = signatureArray.filter(
+      (signature) => signature.id !== id
+    );
+    setSignatureArray(updatedSignatureArray);
+  };
+
+  // delete text block
+  const deleteTextHandler = (id) => {
+    const updatedTextArray = textArray.filter(
+      (signature) => signature.id !== id
+    );
+    setTextArray(updatedTextArray);
   };
 
   // update text Array position
@@ -121,8 +142,9 @@ const Container = (props) => {
     updatedTextArray[textIndex].content = newContent;
     setTextArray(updatedTextArray);
   };
-
+  console.log("pdfFile", pdfFile);
   return (
+    // <div>Container</div>
     <div className={classes.container}>
       <Toolbar
         onGetCanvas={createSignHandler}
@@ -130,19 +152,19 @@ const Container = (props) => {
         editingMode={editingMode}
         signatureArray={signatureArray}
         textArray={textArray}
-        pdfFileName={props.PDFfileName}
         draggable={props.draggable}
       />
       <PdfContainer
         signatureArray={signatureArray}
         textArray={textArray}
         uploadPdfError={uploadPdfError}
-        pdfUrl={pdfUrl}
         pdfError={pdfError}
         updatedCanvasPosition={updatedCanvasPosition}
         updatedTextPosition={updatedTextPosition}
         createTextHandler={createTextHandler}
         createSignHandler={createSignHandler}
+        deleteSignHandler={deleteSignHandler}
+        deleteTextHandler={deleteTextHandler}
         showModalHandler={showModalHandler}
         editingMode={editingMode}
         setSelectedBlockId={setSelectedBlockId}

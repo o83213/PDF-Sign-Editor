@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import Head from "next/head";
-// import Link from "next/link";
 import AllFunctions from "../components/AllFunctions";
 export default function HomePage() {
   return (

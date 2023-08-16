@@ -9,6 +9,7 @@ import {
 import classes from "./Toolbar.module.css";
 import { useRouter } from "next/router";
 const Toolbar = (props) => {
+  console.log("props", props);
   // these two class name for signature and text button active state
   const router = useRouter();
   const textClassname =
@@ -21,10 +22,14 @@ const Toolbar = (props) => {
       : `${classes.btn}`;
   // toggle createSignature on the editing mode
   const createSignatureHandler = () => {
-    props.changeEditingModeHandler((prev) => {
-      if (prev === "createSignature") return "";
-      return "createSignature";
-    });
+    const newEditingMode =
+      props.editingMode === "createSignature" ? "" : "createSignature";
+    // props.changeEditingModeHandler((prev) => {
+    //   console.log("prev", prev);
+    //   if (prev === "createSignature") return "";
+    //   return "createSignature";
+    // });
+    props.changeEditingModeHandler(newEditingMode);
   };
 
   // toggle createSignature on the editing mode
@@ -85,7 +90,10 @@ const Toolbar = (props) => {
       <section className={classes["toolbar-container"]}>
         <h3>Tool Field</h3>
         <div className={`${!props.draggable && classes.hidden}`}>
-          <button className={classes.btn} onClick={createSignatureHandler}>
+          <button
+            className={signatureClassname}
+            onClick={createSignatureHandler}
+          >
             <span>
               <BsFillPenFill />
               &nbsp;:&nbsp; Signature
@@ -93,7 +101,7 @@ const Toolbar = (props) => {
           </button>
         </div>
         <div className={`${!props.draggable && classes.hidden}`}>
-          <button className={classes.btn} onClick={createTextHandler}>
+          <button className={textClassname} onClick={createTextHandler}>
             <span>
               <BsTextareaT />
               &nbsp;:&nbsp;Text

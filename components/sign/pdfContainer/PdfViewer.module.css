@@ -9,3 +9,16 @@
   left: 100px;
   top: 100px;
 }
+
+.delete-icon {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  width: 1rem;
+  height: 1rem;
+  background: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}

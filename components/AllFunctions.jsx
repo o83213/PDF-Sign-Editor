@@ -9,11 +9,6 @@ const AllFunctions = () => {
           <a>Create new task</a>
         </Link>
       </li>
-      <li className={`${classes["item"]} ${classes["btn"]}`}>
-        <Link href="/loadtasks">
-          <a>View all tasks</a>
-        </Link>
-      </li>
     </ul>
   );
 };

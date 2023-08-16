@@ -1,28 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PdfViewer from "./PdfViewer";
 import DragableWraper from "./DragableWraper";
 //
 import classes from "./PdfContainer.module.css";
+import { pdfContext } from "../../../context/pdfContext";
 const PdfContainer = (props) => {
-  const [pdfUrl, setPdfUrl] = useState(null);
-  const [pdfError, setPdfError] = useState(null);
+  const { pdfFile } = useContext(pdfContext);
+  console.log("PdfContainer render");
+  console.log("PdfContainer pdfFile", pdfFile);
   // allowed files
   const allowedFiles = ["application/pdf"]; // minetype of pdf file
   //
-  const changeFileHandler = (e) => {
-    let selectedFile = e.target.files[0];
-    if (selectedFile && allowedFiles.includes(selectedFile.type)) {
-      props.uploadPdfFile(selectedFile);
-      setPdfUrl(URL.createObjectURL(selectedFile));
-      setPdfError(null);
-    } else {
-      const error = new Error("Not a valid pdf file!");
-      setPdfError(error);
-    }
-  };
-  useEffect(() => {
-    setPdfUrl(props.pdfUrl);
-  }, [props.pdfUrl]);
+  // const changeFileHandler = (e) => {
+  //   let selectedFile = e.target.files[0];
+  //   if (selectedFile && allowedFiles.includes(selectedFile.type)) {
+  //     props.uploadPdfFile(selectedFile);
+  //     setPdfUrl(URL.createObjectURL(selectedFile));
+  //     setPdfError(null);
+  //   } else {
+  //     const error = new Error("Not a valid pdf file!");
+  //     setPdfError(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   setPdfUrl(props.pdfUrl);
+  // }, [props.pdfUrl]);
   return (
     <div>
       {/* <form>
@@ -31,12 +33,12 @@ const PdfContainer = (props) => {
       </form> */}
       <h3>View PDF</h3>
       <div className={classes["container"]}>
-        {!pdfUrl && !pdfError && (
+        {!pdfFile && (
           <h4 className={classes.message}>No file is selected...</h4>
         )}
-        {pdfUrl && !pdfError && (
+        {pdfFile && (
           <PdfViewer
-            url={pdfUrl}
+            pdfFile={pdfFile}
             signatureArray={props.signatureArray}
             textArray={props.textArray}
             updatedCanvasPosition={props.updatedCanvasPosition}
@@ -44,6 +46,8 @@ const PdfContainer = (props) => {
             // updatedTextContent={props.updatedTextContent}
             createTextHandler={props.createTextHandler}
             createSignHandler={props.createSignHandler}
+            deleteSignHandler={props.deleteSignHandler}
+            deleteTextHandler={props.deleteTextHandler}
             editingMode={props.editingMode}
             showModalHandler={props.showModalHandler}
             setSelectedBlockId={props.setSelectedBlockId}
@@ -51,11 +55,11 @@ const PdfContainer = (props) => {
             draggable={props.draggable}
           />
         )}
-        {pdfError && (
+        {/* {pdfError && (
           <h4 className={`${classes.message} ${classes.error}`}>
             {pdfError.message}
           </h4>
-        )}
+        )} */}
       </div>
     </div>
   );
