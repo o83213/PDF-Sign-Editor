@@ -4,7 +4,6 @@
   align-items: center;
   gap: 24px;
   padding-top: 60px;
-  /* justify-content: center; */
 }
 .item {
   font-size: 24px;
@@ -16,18 +15,13 @@
   font-weight: 600;
   padding: 1rem;
   border-radius: 9px;
-  /* Only necessary for .btn */
   border: none;
   cursor: pointer;
   font-family: inherit;
-  /* Put transition on original "state" */
-  /* transition: background-color 0.3s; */
   transition: all 0.3s;
 }
 .btn:hover,
 .btn:active {
   background-color: #99e9f2;
-  /* border: 3px solid #fff; */
-  /* Trick to add border inside */
   box-shadow: inset 0 0 0 3px #fff;
 }

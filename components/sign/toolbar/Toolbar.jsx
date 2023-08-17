@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { IconContext } from "react-icons";
 import {
   BsFillPenFill,
@@ -7,10 +7,12 @@ import {
   BsDownload,
 } from "react-icons/bs";
 import classes from "./Toolbar.module.css";
+import { pdfContext } from "../../../context/pdfContext";
 import { useRouter } from "next/router";
+import { modifyPdf } from "../../../util/modifyPdf";
 const Toolbar = (props) => {
-  console.log("props", props);
-  // these two class name for signature and text button active state
+  const { pdfFile, setModifiedFile, modifiedFile } = useContext(pdfContext);
+
   const router = useRouter();
   const textClassname =
     props.editingMode === "createText"
@@ -20,68 +22,36 @@ const Toolbar = (props) => {
     props.editingMode === "createSignature"
       ? `${classes.btn} ${classes.active}`
       : `${classes.btn}`;
-  // toggle createSignature on the editing mode
+
   const createSignatureHandler = () => {
     const newEditingMode =
       props.editingMode === "createSignature" ? "" : "createSignature";
-    // props.changeEditingModeHandler((prev) => {
-    //   console.log("prev", prev);
-    //   if (prev === "createSignature") return "";
-    //   return "createSignature";
-    // });
     props.changeEditingModeHandler(newEditingMode);
   };
 
-  // toggle createSignature on the editing mode
   const createTextHandler = () => {
     props.changeEditingModeHandler((prev) => {
       if (prev === "createText") return "";
       return "createText";
     });
   };
-  // collect the data and send to the API
-  const sendToServerHandler = () => {
-    // use form data to append mutiple type data to req
-    const formData = new FormData();
-    formData.append("signatureArray", JSON.stringify(props.signatureArray));
-    formData.append("textArray", JSON.stringify(props.textArray));
-    formData.append("pdfFileName", props.pdfFileName);
-    // send the post request to the API
-    fetch("http://localhost:8080/save-task", {
-      method: "post",
-      body: formData,
-    })
-      .then((result) => {
-        // get the response json data and parse to object
-        return result.json();
-      })
-      .then((data) => {
-        router.push("/loadtasks");
-      });
+
+  const modifyFileHandler = async () => {
+    const newPdf = await modifyPdf(
+      pdfFile,
+      props.signatureArray,
+      props.textArray
+    );
+
+    setModifiedFile(newPdf);
+    router.push("/viewtask");
   };
   const downloadTaskHandler = () => {
-    const formData = new FormData();
-    formData.append("signatureArray", JSON.stringify(props.signatureArray));
-    formData.append("textArray", JSON.stringify(props.textArray));
-    formData.append("pdfFileName", props.pdfFileName);
-    // send the post request to the API
-    // fetch("http://localhost:8080/download", {
-    fetch("http://localhost:8080/download", {
-      method: "post",
-      body: formData,
-    })
-      .then((result) => {
-        // get the response json data and parse to object
-        return result.json();
-      })
-      .then((data) => {
-        // use html anchor element to download file
-        const downloadAnchor = document.createElement("a");
-        downloadAnchor.target = "_blank";
-        downloadAnchor.download = "modified-file.pdf";
-        downloadAnchor.href = "http://localhost:8080/" + data.filePath;
-        downloadAnchor.click();
-      });
+    const newfile = new Blob([modifiedFile], {
+      type: "application/pdf",
+    });
+    const modifiedFileUrl = URL.createObjectURL(newfile);
+    window.open(modifiedFileUrl);
   };
   return (
     <IconContext.Provider
@@ -109,7 +79,7 @@ const Toolbar = (props) => {
           </button>
         </div>
         <div className={`${!props.draggable && classes.hidden}`}>
-          <button className={classes.btn} onClick={sendToServerHandler}>
+          <button className={classes.btn} onClick={modifyFileHandler}>
             <span>
               <BsUpload />
               &nbsp;:&nbsp;Create Task

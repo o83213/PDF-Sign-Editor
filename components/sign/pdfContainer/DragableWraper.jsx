@@ -47,10 +47,6 @@ const DragableWraper = (props) => {
             props.deleteSignHandler();
           }}
         />
-        {/* <div>id: {props.id}</div>
-        <div>
-          x: {deltaPosition.x}, y: {deltaPosition.y}
-        </div> */}
       </div>
     </Draggable>
   );

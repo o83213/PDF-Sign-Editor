@@ -5,8 +5,8 @@ export default function HomePage() {
   return (
     <Fragment>
       <Head>
-        <title>PDF Signing Demo</title>
-        <meta name="description" content="Lion PDF signing demo" />
+        <title>PDF Signing</title>
+        <meta name="description" content="PDF Sign" />
       </Head>
       <AllFunctions />
     </Fragment>

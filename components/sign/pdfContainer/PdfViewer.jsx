@@ -1,67 +1,61 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useContext,
-} from "react";
+import React, { useEffect, useState, useRef, useContext, useMemo } from "react";
 import { getPosition } from "../../../util/getPosition";
 import classes from "./PdfViewer.module.css";
 import DragableWraper from "./DragableWraper";
 import DragableWraperText from "./DragableWraperText";
 import { pdfContext } from "../../../context/pdfContext";
-import { PDFDocument } from "pdf-lib";
+import * as pdfjsLib from "pdfjs-dist/build/pdf";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+//
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+//
 const PdfViewer = (props) => {
-  // const { pdfFile } = props;
-  const { pdfFile } = useContext(pdfContext);
+  const { pdfFile: rawFile, modifiedFile } = useContext(pdfContext);
+  const pdfFile = useMemo(() => {
+    return props.mode === "edit" ? rawFile : modifiedFile;
+  }, [props.mode, rawFile, modifiedFile]);
   const canvasRef = useRef();
 
   const [pdfRef, setPdfRef] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  console.log("file in pdfViewer", pdfFile);
+  const [currentPage, setCurrentPage] = useState(1); //TODO: adding page change function
   const viewerId = "pdfViewCanvas";
-  // const renderPage = useCallback(
-  //   (pageNum) => {
-  //     pdfFile &&
-  //       pdfFile.getPage(pageNum).then(function (page) {
-  //         const viewport = page.getViewport({ scale: 1.5 });
-  //         const canvas = canvasRef.current;
-  //         canvas.height = viewport.height;
-  //         canvas.width = viewport.width;
-  //         const renderContext = {
-  //           canvasContext: canvas.getContext("2d"),
-  //           viewport: viewport,
-  //         };
-  //         page.render(renderContext);
-  //       });
-  //   },
-  //   [pdfFile]
-  // );
-
-  // useEffect(() => {
-  //   renderPage(currentPage);
-  // }, [pdfFile, currentPage]);
 
   useEffect(() => {
-    // loading pdf file
-    console.log(typeof pdfFile);
-    PDFDocument.load(pdfFile).then(
+    renderPage(currentPage, pdfRef);
+    function renderPage(pageNum, pdfLibFile) {
+      if (!pdfLibFile) return;
+      pdfLibFile.getPage(pageNum).then(function (page) {
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = canvasRef.current;
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        const renderContext = {
+          canvasContext: canvas.getContext("2d"),
+          viewport: viewport,
+        };
+        page.render(renderContext);
+      });
+    }
+  }, [currentPage, pdfRef]);
+
+  useEffect(() => {
+    const localPdfUrl =
+      props.mode === "edit" ? URL.createObjectURL(pdfFile) : pdfFile;
+    pdfjsLib.getDocument(localPdfUrl).promise.then(
       (loadedPdf) => {
-        console.log("loadedPdf", loadedPdf);
         setPdfRef(loadedPdf);
       },
-      function (reason) {
-        console.error(reason);
+      function (err) {
+        console.log(err);
       }
     );
-  }, [pdfFile]);
+  }, [pdfFile, props.mode]);
 
   return (
     <div
       className={classes.container}
       onClick={(event) => {
         event.preventDefault();
-        console.log("event", event.target);
         if (
           props.editingMode !== "createText" &&
           props.editingMode !== "createSignature"
@@ -115,7 +109,7 @@ const PdfViewer = (props) => {
           draggable={props.draggable}
         />
       ))}
-      <canvas className={classes.canvas} ref={canvasRef} id={viewerId}></canvas>
+      <canvas className={classes.canvas} ref={canvasRef} id={viewerId} />
     </div>
   );
 };

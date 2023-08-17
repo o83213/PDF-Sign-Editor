@@ -23,7 +23,7 @@
 }
 
 .box {
-  position: relative;
+  position: absolute;
   cursor: move;
   background: rgba(0, 0, 0, 0.01);
   border: 1px solid #ccc;

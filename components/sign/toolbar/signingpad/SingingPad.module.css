@@ -65,12 +65,3 @@
   border: 1px solid var(--color-grey-400);
   resize: none;
 }
-/* Need to prevent the scrolling event when signing! 
-
-@media (pointer: coarse) {
-  body {
-    overflow: hidden; 
-  }
-}
-
-*/

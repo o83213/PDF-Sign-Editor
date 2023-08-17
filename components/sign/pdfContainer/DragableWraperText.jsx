@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import Draggable from "react-draggable";
 import classes from "./DragableWraperText.module.css";
+import { RiDeleteBinLine } from "react-icons/ri";
 const DragableWraperText = (props) => {
   const [deltaPosition, setDeltaPosition] = useState({
     x: props.position.x,
@@ -41,10 +42,12 @@ const DragableWraperText = (props) => {
         }}
       >
         <span ref={spanRef}>{props.content}</span>
-        {/* <div>id: {props.id}</div>
-        <div>
-          x: {deltaPosition.x}, y: {deltaPosition.y}
-        </div> */}
+        <RiDeleteBinLine
+          className={classes["delete-icon"]}
+          onClick={() => {
+            props.deleteSignHandler();
+          }}
+        />
       </div>
     </Draggable>
   );

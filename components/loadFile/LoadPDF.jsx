@@ -19,27 +19,6 @@ const LoadPDF = () => {
       alert("Not a PDF file!");
       return;
     }
-    // send the pdf file to the backend
-    // const formData = new FormData();
-    // formData.append("pdfFile", pdfFile);
-    // fetch("http://localhost:8080/save-pdf", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((result) => {
-    //     return result.json();
-    //   })
-    //   .then((data) => {
-    //     const { fileName } = data;
-    //     router.push({
-    //       pathname: "/create-task/assign-field",
-    //       query: {
-    //         fileName,
-    //       },
-    //     });
-    //   })
-    //   .catch((err) => console.log(err));
-    // set pdf file to context
     setPdfFile(pdfFile);
     router.push({
       pathname: "/create-task/assign-field",

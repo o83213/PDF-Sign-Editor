@@ -2,35 +2,34 @@ import React, { useState, useRef, useEffect } from "react";
 import Modal from "../../../layout/Modal";
 import classes from "./SingingPad.module.css";
 const SigningPad = (props) => {
-  // store the text for updating to text block on pdf viewer
   const [canvasText, setCanvasText] = useState("");
-  // this writing mode is to control canvas can be draw or not
   const [writingMode, setWritingMode] = useState(false);
-  // store the context on the canvas
+
   const [ctx, setCtx] = useState(null);
   const canvasRef = useRef(null);
+
   useEffect(() => {
     setCtx(canvasRef.current.getContext("2d"));
   }, []);
-  // build the pointer down event for signature canvas
+
   const pointerDownHandler = (event) => {
     setWritingMode(true);
     ctx.beginPath();
     const [positionX, positionY] = getTargetPosition(event);
     ctx.moveTo(positionX, positionY);
   };
-  // build the pointer up event for signature canvas and stop writing
+
   const pointerUpHandler = () => {
     setWritingMode(false);
   };
-  // draw the line the fill the line
+
   const pointerMoveHandler = (event) => {
     if (!writingMode) return;
     const [positionX, positionY] = getTargetPosition(event);
     ctx.lineTo(positionX, positionY);
     ctx.stroke();
   };
-  // a helper function to get the cursor position
+
   const getTargetPosition = (event) => {
     let positionX = 0;
     let positionY = 0;
@@ -38,7 +37,7 @@ const SigningPad = (props) => {
     positionY = event.clientY - event.target.getBoundingClientRect().y;
     return [positionX, positionY];
   };
-  // save signature or text content and update the state to the container
+
   const saveContentHandler = (event) => {
     event.preventDefault();
     if (props.editingMode === "editSignature") {
@@ -50,7 +49,7 @@ const SigningPad = (props) => {
     }
     props.onClose();
   };
-  // just clear the content in the signing pad canvas
+
   const clearCanvasHandler = (event) => {
     event.preventDefault();
     if (props.editingMode === "editSignature") {
@@ -59,6 +58,7 @@ const SigningPad = (props) => {
       setCanvasText("");
     }
   };
+
   return (
     <Modal onClose={props.onClose}>
       <form className={classes["signature-pad-form"]}>
